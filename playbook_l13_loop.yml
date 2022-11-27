@@ -1,0 +1,31 @@
+---
+ - name: Loop test ansible
+   hosts: UbuntuLinux3
+   become: yes
+
+  
+   tasks:
+    - name: Say Heloo to all
+      debug: msg="Hello  {{ item }}"
+      loop:
+           - "Vasya"
+           - "Petya"
+           - "Olya"
+           - "Ira"
+
+    - name: Loop until 
+      shell: echo -n U>>myfile.txt && cat myfile.txt
+      register: output
+      delay: 2
+      retries: 10
+      until: output.stdout.find("UUUU") == false
+
+    - name: Final Output
+      debug:
+       var: output.stdout
+    
+    - name: Install packages
+      apt: name={{ item }} state=latest
+      loop:
+         - tree
+         - mc

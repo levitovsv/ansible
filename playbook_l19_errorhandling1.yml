@@ -1,0 +1,24 @@
+---
+- name: Lesson 19 error handling
+  hosts: all
+  any_errors_fatal: true
+  become: yes
+
+  tasks:
+  - name: Task Number 1
+    yum:  name=tree state=latest
+    ignore_errors: yes
+
+  - name: Task2
+    shell: cat /home/myfile.txt
+#    register: results
+#    failed_when: "'World' in results.stdout"
+#    failed_when: results.rc == 0
+
+  - debug:
+     var: results
+
+  - name: Task3
+    shell: echo Privet Mir!
+
+

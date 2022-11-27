@@ -1,0 +1,52 @@
+---
+- name: My super playbook file
+  hosts: all
+  become: yes
+
+  vars:
+   mytext: "DELEGATE----"
+
+  tasks:
+  - name: Ping test
+    ping:
+
+  - name: Update Database run once
+    shell: echo Update Database
+    run_once: true
+
+  - name: Echo test file
+    shell: echo This server {{ inventory_hostname }} , node name is {{ ansible_nodename }}>> /home/log.txt
+    delegate_to: localhost   
+
+  - name: Create File3
+    copy:
+     dest: /home/secret/file3.txt
+     content: |
+       Text line1, in file3
+       Text line2, in file3
+       Text line3, {{ mytext }}
+    delegate_to: UbuntuLinux3
+
+  - name: Create File2
+    copy:
+     dest: /home/secret/file4.txt
+     content: |
+       Text line1, in file4
+       Text line2, in file4
+       Text line3, {{ mytext }}
+
+  - name: Reboot server
+    shell: sleep 3&& reboot now
+    async: 1
+    poll:  0
+
+  - name: Wait for rebooting servers
+    wait_for:
+       host: "{{ inventory_hostname }}"
+       state: started
+       delay: 5
+       timeout: 40 
+    delegate_to: localhost 
+  
+
+

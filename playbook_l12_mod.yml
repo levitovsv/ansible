@@ -1,0 +1,57 @@
+---
+ - name: Install Http servers and Upload My Web Pages
+   hosts: all
+   become: yes
+
+   vars: 
+     source_dir: /home/ec2-user/sitedir
+     destination_dir: /var/www/html
+
+
+   tasks:
+    - name: Check and print linux name
+      debug: var=ansible_os_family
+
+    - block:  # block for Redhat
+     
+       - name: Install Apapche web server for RedHat
+         yum: name=httpd state=latest
+
+
+       - name: Start Web servers for Redhat
+         service: name=httpd state=started enabled=yes
+      
+      when: ansible_os_family == "RedHat"
+
+    - block:  # block for Ubuntu
+
+
+       - name: Install Apache web server for Ubuntu
+         apt: name=apache2 state=latest
+
+
+       - name: Start Web servers for ubuntu
+         service: name=apache2 state=started enabled=yes
+
+      when: ansible_os_family == "Debian"
+
+
+    - name: Copy my Web servers
+      copy: src={{ source_dir }}/{{ item }} dest={{ destination_dir }} mode=0555
+      loop:
+         - "index.html"
+         - "img"
+         - "styles"
+      notify:
+         -  Restart apache Redhat
+         -  Restart apache Ubuntu
+   
+   handlers:
+   - name: Restart apache Redhat
+     service: name=httpd state=restarted 
+     when: ansible_os_family == "RedHat"
+
+   - name: Restart apache Ubuntu
+     service: name=apache2 state=restarted
+     when: ansible_os_family == "Debian"
+

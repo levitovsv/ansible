@@ -1,0 +1,25 @@
+---
+ - name: Install Http servers and Upload My Web Pages
+   hosts: staging_servers
+   become: yes
+
+   vars: 
+     source_dir: /home/ec2-user/www
+     destination_dir: /var/www/html
+
+
+   tasks:
+    - name: Install Apapche web server
+      yum: name=httpd state=latest
+
+    - name: Copy my Web servers
+      copy: src={{ source_dir }} dest={{ destination_dir }}
+      notify: Restart apache
+   
+    - name: Start Web servers
+      service: name=httpd state=started enabled=yes
+
+   handlers:
+    - name: Restart apache
+      service: name=httpd state=restarted 
+

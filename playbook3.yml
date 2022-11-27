@@ -1,0 +1,11 @@
+---
+ - name: Remove Http servers
+   hosts: staging_servers
+   become: yes
+
+
+   tasks:
+    - name: Remove  Web servers
+      yum: name=httpd state=absent
+
+

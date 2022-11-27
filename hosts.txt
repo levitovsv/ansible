@@ -1,0 +1,20 @@
+[staging_servers]
+AmLinux1 ansible_host=172.31.14.67  owner=Vasya
+RedHatLinux2 ansible_host=172.31.42.8 owner=Petya
+
+
+[prod_servers]
+UbuntuLinux3 ansible_host=172.31.2.18  owner=Serhii
+
+[myservers:children]
+staging_servers
+prod_servers
+
+
+
+
+
+[myservers:vars]
+
+
+

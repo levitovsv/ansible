@@ -1,0 +1,13 @@
+---
+ - name: Install Http servers
+   hosts: staging_servers
+   become: yes
+
+
+   tasks:
+    - name: Install Web servers
+      yum: name=httpd state=latest
+
+    - name: Start server at startup
+      service: name=httpd state=started enabled=yes
+

@@ -1,0 +1,39 @@
+---
+# tasks file for deploy_apache_web
+- name: Check and print linux name
+  debug: var=ansible_os_family
+
+- block:  # block for Redhat
+   - name: Install Apapche web server for RedHat
+     yum: name=httpd state=latest
+
+   - name: Start Web servers for Redhat
+     service: name=httpd state=started enabled=yes
+
+  when: ansible_os_family == "RedHat"
+
+- block:  # block for Ubuntu
+   - name: Install Apache web server for Ubuntu
+     apt: name=apache2 state=latest
+
+   - name: Start Web servers for ubuntu
+     service: name=apache2 state=started enabled=yes
+
+  when: ansible_os_family == "Debian"
+
+- name: Generate index.html file
+  template: src=index.j2 dest={{ destination_dir }}/index.html mode=0444
+  notify:
+   -  Restart apache Redhat
+   -  Restart apache Ubuntu
+
+- name: Copy my Web servers (copy only files without dir insyde)
+  copy: src={{ item }} dest={{ destination_dir }} mode=0444
+  loop:
+     - "img"
+     - "styles"
+  notify:
+     -  Restart apache Redhat
+     -  Restart apache Ubuntu
+
+
